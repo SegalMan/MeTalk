@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">MeTalk</string>
+    <string name="send_button_text">Send!</string>
+    <string name="edittext_hint">Type your message here...</string>
+</resources>
