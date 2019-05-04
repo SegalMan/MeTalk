@@ -15,7 +15,7 @@ public abstract class MessageDatabase extends RoomDatabase {
     private static MessageDatabase INSTANCE;
     public abstract MessageDao messageDao();
 
-    static MessageDatabase getDatabase(final Context context)
+    public static MessageDatabase getDatabase(final Context context)
     {
         if (INSTANCE == null)
         {

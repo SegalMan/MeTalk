@@ -15,12 +15,12 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-class MessageRecyclerUtils {
+public class MessageRecyclerUtils {
 
     static class MessageHolder extends RecyclerView.ViewHolder {
-        final TextView text;
-        final TextView time;
-        MessageHolder(@NonNull View itemView) {
+        public final TextView text;
+        public final TextView time;
+        public MessageHolder(@NonNull View itemView) {
             super(itemView);
             text = itemView.findViewById(R.id.message_text);
             time = itemView.findViewById(R.id.message_time);
@@ -46,11 +46,11 @@ class MessageRecyclerUtils {
 
     static class MessageAdapter extends ListAdapter<Message, MessageHolder> {
 
-        MessageAdapter() {
+        public MessageAdapter() {
             super (new MessageCallBack());
         }
 
-        MessageLongClickCallback callback;
+        public MessageLongClickCallback callback;
 
         @NonNull
         @Override

@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onLongClickMessage(final Message message) {
-        new AlertDialog.Builder(this)
+        AlertDialog alertDialog = new AlertDialog.Builder(this)
                 .setTitle("Delete message")
                 .setMessage("Are you sure you want to delete this message?")
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {

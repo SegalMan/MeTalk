@@ -7,7 +7,7 @@ import androidx.lifecycle.LiveData;
 
 import java.util.List;
 
-class MessageViewModel extends AndroidViewModel {
+public class MessageViewModel extends AndroidViewModel {
     private MessageRepository messageRepository;
     private LiveData<List<Message>> allMessages;
 

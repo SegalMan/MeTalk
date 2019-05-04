@@ -7,7 +7,7 @@ import androidx.lifecycle.LiveData;
 
 import java.util.List;
 
-class MessageRepository {
+public class MessageRepository {
     private MessageDao messageDao;
     private LiveData<List<Message>> allMessages;
 
