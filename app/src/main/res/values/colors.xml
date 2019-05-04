@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
-    <color name="textview_background">#19AD51</color>
-    <color name="edittext_background">#DF0D9C5D</color>
+    <color name="colorPrimary">#1179CC</color>
+    <color name="colorPrimaryLight">#64bf56</color>
+    <color name="colorPrimaryDark">#08417E</color>
+    <color name="colorAccent">#FFFF9800</color>
+    <color name="edittext_background">#19AD51</color>
+    <color name="bottombar_background">#DF0D9C5D</color>
+    <color name="messagetime_color">#C2C7C5</color>
 </resources>

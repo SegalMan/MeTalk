@@ -1,4 +1,4 @@
-package com.example.metalk;
+package com.SegalTech.MeTalk;
 
 import org.junit.Test;
 

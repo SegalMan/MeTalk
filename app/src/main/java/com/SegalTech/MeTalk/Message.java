@@ -1,22 +1,30 @@
-package com.example.metalk;
+package com.SegalTech.MeTalk;
 
-import java.text.SimpleDateFormat;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Locale;
+import java.util.Date;
 import java.util.Objects;
 
+@Entity(tableName = "messages")
 class Message {
-    final String messageText;
-    final String messageTime;
-    static ArrayList<Message> messages = new ArrayList<>();
 
-    public Message(String messageText)
+    @PrimaryKey(autoGenerate = true)
+    int messageId = 0;
+
+    @ColumnInfo(name = "message_text")
+    String messageText;
+
+    @ColumnInfo(name = "timestamp")
+    Date messageTime;
+
+    Message(String messageText)
     {
         this.messageText = messageText;
-        SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm",
-                Locale.getDefault());
-        this.messageTime = dateFormatter.format(Calendar.getInstance().getTime());
+        this.messageTime = Calendar.getInstance().getTime();
     }
 
     @Override
@@ -33,7 +41,7 @@ class Message {
 
         Message m = (Message) obj;
 
-        return this.messageText.equals(m.messageText);
+        return this.messageId == ((Message) obj).messageId;
     }
 
     @Override

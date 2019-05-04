@@ -1,20 +1,27 @@
-package com.example.metalk;
+package com.SegalTech.MeTalk;
 
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-import java.util.ArrayList;
 
-import static com.example.metalk.Message.messages;
+import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+        implements MessageRecyclerUtils.MessageLongClickCallback {
 
     static final String MSG_BOX_KEY = "messageBox";
     static final String EMPTY_MSG_TOAST_TEXT = "But you didn't write anything :(";
@@ -22,16 +29,29 @@ public class MainActivity extends AppCompatActivity {
     private MessageRecyclerUtils.MessageAdapter adapter = new
             MessageRecyclerUtils.MessageAdapter();
 
+    private MessageViewModel messageViewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        messageViewModel = ViewModelProviders.of(this).
+                get(MessageViewModel.class);
+
+        messageViewModel.getAllMessages().observe(this, new Observer<List<Message>>() {
+            @Override
+            public void onChanged(List<Message> messages) {
+                adapter.submitList(messages);
+            }
+        });
+
         // Configure RecyclerView
         final RecyclerView messageRecycler = findViewById(R.id.message_recycler);
         messageRecycler.setLayoutManager(new LinearLayoutManager(
-                this, LinearLayoutManager.VERTICAL, false));
+                this, RecyclerView.VERTICAL, false));
         messageRecycler.setAdapter(adapter);
+        adapter.callback = this;
         messageRecycler.setItemAnimator(new DefaultItemAnimator());
 
         final Button sendButton = findViewById(R.id.send_button);
@@ -55,8 +75,10 @@ public class MainActivity extends AppCompatActivity {
                 // Re-submits message list with new message
                 else
                 {
-                    messages.add(new Message(messageBox.getText().toString()));
-                    adapter.submitList(new ArrayList<>(messages));
+                    messageViewModel.insert(new Message(messageBox.getText().toString()));
+//                    adapter.notifyDataSetChanged();
+//                    messages.add(new Message(messageBox.getText().toString()));
+//                    adapter.submitList(new ArrayList<>(messages));
                     messageBox.setText("");
                     messageBox.clearFocus();
                 }
@@ -66,13 +88,28 @@ public class MainActivity extends AppCompatActivity {
         // Retains RecyclerView and EditText contents on changed configuration
         if (savedInstanceState != null)
         {
-            adapter.submitList(messages);
             messageBox.setText(savedInstanceState.getCharSequence(MSG_BOX_KEY));
         }
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    public void onLongClickMessage(final Message message) {
+        new AlertDialog.Builder(this)
+                .setTitle("Delete message")
+                .setMessage("Are you sure you want to delete this message?")
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        messageViewModel.delete(message);
+                    }
+                })
+                .setNegativeButton(android.R.string.no, null)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         // Save edittext contents in case of OnDestroy
