@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "186362309345",
+    "firebase_url": "https://metalk-86ed2.firebaseio.com",
+    "project_id": "metalk-86ed2",
+    "storage_bucket": "metalk-86ed2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:186362309345:android:65b5d38373500afc",
+        "android_client_info": {
+          "package_name": "com.SegalTech.MeTalk"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "186362309345-dak9ovg7rmoarpje5tma6n4a7ud05slo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCdWt9mpFTiS2T4Nl1ftyoS9_EDpJmxN8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "186362309345-dak9ovg7rmoarpje5tma6n4a7ud05slo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
