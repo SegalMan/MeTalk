@@ -13,16 +13,16 @@ public class MeTalk extends Application {
     public void onCreate() {
         super.onCreate();
 
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                Log.i(LOG_TAG, "Current count is " +
-                        MessageDatabase.getDatabase(getApplicationContext()).
-                                messageDao().count() + " messages");
-            }
-        });
-
-        executor.shutdown();
+//        ExecutorService executor = Executors.newSingleThreadExecutor();
+//        executor.execute(new Runnable() {
+//            @Override
+//            public void run() {
+//                Log.i(LOG_TAG, "Current count is " +
+//                        MessageDatabase.getDatabase(getApplicationContext()).
+//                                messageDao().count() + " messages");
+//            }
+//        });
+//
+//        executor.shutdown();
     }
 }

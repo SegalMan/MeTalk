@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#1179CC</color>
-    <color name="colorPrimaryLight">#64bf56</color>
-    <color name="colorPrimaryDark">#08417E</color>
-    <color name="colorAccent">#FFFF9800</color>
-    <color name="edittext_background">#19AD51</color>
-    <color name="bottombar_background">#DF0D9C5D</color>
-    <color name="messagetime_color">#C2C7C5</color>
+    <color name="colorPrimary">#3A8ACC</color>
+    <color name="colorPrimaryLight">#85BF7C</color>
+    <color name="colorPrimaryDark">#214E7E</color>
+    <color name="colorAccent">#DEE7A937</color>
+    <color name="colorAccentDark">#DEB17C19</color>
+    <color name="edittext_background">#184677</color>
+    <color name="bottombar_background">#0C3D6F</color>
 </resources>

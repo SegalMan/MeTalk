@@ -8,12 +8,20 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:186362309345:android:65b5d38373500afc",
+        "mobilesdk_app_id": "1:186362309345:android:d2ec2712a9797ad7",
         "android_client_info": {
-          "package_name": "com.SegalTech.MeTalk"
+          "package_name": "com.example.metalk"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "186362309345-1oikufundgukhqjbav45jvultq5d4kcc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.metalk",
+            "certificate_hash": "0c271c55b73de1140af2ec079702679607d14db5"
+          }
+        },
         {
           "client_id": "186362309345-dak9ovg7rmoarpje5tma6n4a7ud05slo.apps.googleusercontent.com",
           "client_type": 3

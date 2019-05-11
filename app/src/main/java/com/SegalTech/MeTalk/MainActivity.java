@@ -9,22 +9,23 @@ import android.os.Bundle;
 
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import java.util.List;
+
+import jp.wasabeef.recyclerview.animators.SlideInRightAnimator;
 
 public class MainActivity extends AppCompatActivity
         implements MessageRecyclerUtils.MessageLongClickCallback {
 
     static final String MSG_BOX_KEY = "messageBox";
-    static final String EMPTY_MSG_TOAST_TEXT = "But you didn't write anything :(";
+    static final String EMPTY_MSG_TOAST_TEXT = "But you didn't type a message :(";
 
     private MessageRecyclerUtils.MessageAdapter adapter = new
             MessageRecyclerUtils.MessageAdapter();
@@ -32,7 +33,8 @@ public class MainActivity extends AppCompatActivity
     private MessageViewModel messageViewModel;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -46,15 +48,21 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        // Use async task to insert messages into local DB
+        messageViewModel.insertAll(messageViewModel.getAllMessages().getValue());
+
+        // Use async task to insert messages into local DB
+//        messageViewModel.insertAll(messageViewModel.getAllMessages().getValue());
+
         // Configure RecyclerView
         final RecyclerView messageRecycler = findViewById(R.id.message_recycler);
         messageRecycler.setLayoutManager(new LinearLayoutManager(
                 this, RecyclerView.VERTICAL, false));
         messageRecycler.setAdapter(adapter);
         adapter.callback = this;
-        messageRecycler.setItemAnimator(new DefaultItemAnimator());
+        messageRecycler.setItemAnimator(new SlideInRightAnimator());
 
-        final Button sendButton = findViewById(R.id.send_button);
+        final ImageButton sendButton = findViewById(R.id.send_button);
         final EditText messageBox = findViewById(R.id.message_box);
 
         // Sets button onClickListener
@@ -68,7 +76,7 @@ public class MainActivity extends AppCompatActivity
                     Toast t = Toast.makeText(getApplicationContext(), EMPTY_MSG_TOAST_TEXT,
                             Toast.LENGTH_SHORT);
 
-                    t.setGravity(Gravity.CENTER, 0, 0);
+                    t.setGravity(Gravity.BOTTOM, 0, 250);
                     t.show();
                 }
 
@@ -76,9 +84,7 @@ public class MainActivity extends AppCompatActivity
                 else
                 {
                     messageViewModel.insert(new Message(messageBox.getText().toString()));
-//                    adapter.notifyDataSetChanged();
-//                    messages.add(new Message(messageBox.getText().toString()));
-//                    adapter.submitList(new ArrayList<>(messages));
+                    adapter.notifyItemInserted(messageRecycler.getChildCount());
                     messageBox.setText("");
                     messageBox.clearFocus();
                 }
@@ -100,7 +106,10 @@ public class MainActivity extends AppCompatActivity
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        int messageIndex = messageViewModel.getAllMessages().getValue().
+                                indexOf(message);
                         messageViewModel.delete(message);
+                        adapter.notifyItemRemoved(messageIndex);
                     }
                 })
                 .setNegativeButton(android.R.string.no, null)

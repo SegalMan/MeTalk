@@ -40,7 +40,8 @@ public class MessageRecyclerUtils {
 
         @Override
         public boolean areContentsTheSame(@NonNull Message m1, @NonNull Message m2) {
-            return m1.equals(m2);
+            return ((m1.messageText.equals(m2.messageText))
+                    && (m1.messageTime.equals(m2.messageTime)));
         }
     }
 
