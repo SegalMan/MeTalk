@@ -44,20 +44,16 @@ class Message {
 
     @Override
     public boolean equals(Object obj) {
+        if (this == obj) return true;
         if ((obj == null) || this.getClass() != obj.getClass())
         {
             return false;
         }
 
-        if (this == obj)
-        {
-            return true;
-        }
-
         Message m = (Message) obj;
 
-        return ((this.messageText.equals(m.messageText))
-                && (this.messageTime.equals(m.messageTime)));
+        return ((this.messageId == m.messageId) && (Objects.equals(this.messageTime, m.messageTime))
+                && (Objects.equals(this.messageText, m.messageText)));
     }
 
     @Override

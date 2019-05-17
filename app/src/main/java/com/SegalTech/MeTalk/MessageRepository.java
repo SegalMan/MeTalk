@@ -36,6 +36,11 @@ public class MessageRepository {
 //        return allMessages;
     }
 
+    int count()
+    {
+        return messageDao.count();
+    }
+
     void insert(Message message)
     {
         new InsertAsyncTask(messageDao, firestoreDB).execute(message);
@@ -138,14 +143,8 @@ public class MessageRepository {
                 {
                     asyncTaskMessageDao.insert(m);
                 }
-                Log.i(APPLICATION_LOG_TAG, "Current count is " + messages.size() + " messages");
-            }
-            else
-            {
-                Log.i(APPLICATION_LOG_TAG, "No messages in local database");
             }
             return null;
         }
-
     }
 }

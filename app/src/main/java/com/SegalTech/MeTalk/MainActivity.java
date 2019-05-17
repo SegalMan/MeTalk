@@ -30,18 +30,16 @@ public class MainActivity extends AppCompatActivity
     private MessageRecyclerUtils.MessageAdapter adapter = new
             MessageRecyclerUtils.MessageAdapter();
 
-    private MessageViewModel messageViewModel;
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        messageViewModel = ViewModelProviders.of(this).
+        final MeTalk application = (MeTalk) getApplication();
+        application.messageViewModel = ViewModelProviders.of(this).
                 get(MessageViewModel.class);
-
-        messageViewModel.getAllMessages().observe(this, new Observer<List<Message>>() {
+        application.messageViewModel.getAllMessages().observe(this, new Observer<List<Message>>() {
             @Override
             public void onChanged(List<Message> messages) {
                 adapter.submitList(messages);
@@ -49,10 +47,8 @@ public class MainActivity extends AppCompatActivity
         });
 
         // Use async task to insert messages into local DB
-        messageViewModel.insertAll(messageViewModel.getAllMessages().getValue());
-
-        // Use async task to insert messages into local DB
-//        messageViewModel.insertAll(messageViewModel.getAllMessages().getValue());
+        application.messageViewModel.insertAll(application.messageViewModel.getAllMessages().
+                getValue());
 
         // Configure RecyclerView
         final RecyclerView messageRecycler = findViewById(R.id.message_recycler);
@@ -83,7 +79,8 @@ public class MainActivity extends AppCompatActivity
                 // Re-submits message list with new message
                 else
                 {
-                    messageViewModel.insert(new Message(messageBox.getText().toString()));
+                    application.messageViewModel.insert(new Message(messageBox.getText().
+                            toString()));
                     adapter.notifyItemInserted(messageRecycler.getChildCount());
                     messageBox.setText("");
                     messageBox.clearFocus();
@@ -106,9 +103,10 @@ public class MainActivity extends AppCompatActivity
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        int messageIndex = messageViewModel.getAllMessages().getValue().
+                        MeTalk application = (MeTalk) getApplication();
+                        int messageIndex = application.messageViewModel.getAllMessages().getValue().
                                 indexOf(message);
-                        messageViewModel.delete(message);
+                        application.messageViewModel.delete(message);
                         adapter.notifyItemRemoved(messageIndex);
                     }
                 })
