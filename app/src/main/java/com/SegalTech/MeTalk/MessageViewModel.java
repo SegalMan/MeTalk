@@ -3,11 +3,13 @@ package com.SegalTech.MeTalk;
 import android.app.Application;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.google.firebase.firestore.DocumentReference;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -20,17 +22,23 @@ import java.util.concurrent.Executors;
 
 import javax.annotation.Nullable;
 
-import static com.SegalTech.MeTalk.MessageRepository.FIRESTORE_LOG_TAG;
 
 public class MessageViewModel extends AndroidViewModel {
+
+    public static String ERROR_RETRIEVING_MESSAGES_LOG = "LIsten failed";
+    public static String ERROR_RETRIEVING_USERNAME_LOG = "Error retrieving username";
+    public static String USERNAME_NOT_FOUND_LOG = "Username not found";
+
     private MessageRepository messageRepository;
     private MutableLiveData<List<Message>> allMessages;
+    private MutableLiveData<String> username;
     private Executor executor = Executors.newCachedThreadPool();
 
     MessageViewModel(Application app) {
         super(app);
         messageRepository = new MessageRepository(app);
         allMessages = new MutableLiveData<>();
+        username = new MutableLiveData<>();
         messageRepository.getAllMessages().addSnapshotListener(
                 new EventListener<QuerySnapshot>()
             {
@@ -43,7 +51,8 @@ public class MessageViewModel extends AndroidViewModel {
                         public void run() {
                             if (e != null) {
                                 allMessages.postValue(null);
-                                Log.e(FIRESTORE_LOG_TAG, "Listen failed", e);
+                                Log.e(MessageRepository.FIRESTORE_LOG_TAG,
+                                        ERROR_RETRIEVING_MESSAGES_LOG, e);
                             }
 
                             List<Message> messageList = new ArrayList<>();
@@ -60,6 +69,37 @@ public class MessageViewModel extends AndroidViewModel {
                     });
                 }
             });
+
+        messageRepository.getUsername().get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull final Task<DocumentSnapshot> task) {
+                executor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (task.isSuccessful())
+                        {
+                            DocumentSnapshot doc = task.getResult();
+                            if ((doc != null) && (doc.exists()) && (doc.getData() != null) &&
+                                    (doc.getData().containsKey(MessageRepository.
+                                            FIRESTORE_USERNAME_FIELD_NAME)))
+                            {
+                                username.postValue((String)doc.getData().get(
+                                        MessageRepository.FIRESTORE_USERNAME_FIELD_NAME));
+                            }
+                            else {
+                                username.postValue("");
+                                Log.d(MessageRepository.FIRESTORE_LOG_TAG,
+                                        USERNAME_NOT_FOUND_LOG);
+                            }
+                        }
+                        else {
+                            Log.d(MessageRepository.FIRESTORE_LOG_TAG,
+                                    ERROR_RETRIEVING_USERNAME_LOG);
+                        }
+                    }
+                });
+            }
+        });
     }
 
     LiveData<List<Message>> getAllMessages()
@@ -67,20 +107,30 @@ public class MessageViewModel extends AndroidViewModel {
         return allMessages;
     }
 
-    void insertAll(List<Message> messages)
+    LiveData<String> getUsername()
     {
-        messageRepository.insertAll(messages);
+        return username;
     }
 
-    void insert(Message message)
-    {
-        messageRepository.insert(message);
+    void insertUsername(String username) {
+        messageRepository.insertUsername(username);
+        this.username.postValue(username);
     }
 
-    void delete(Message message)
+    void insertAllMessages(List<Message> messages)
     {
-        messageRepository.delete(message);
+        messageRepository.insertAllMessages(messages);
     }
 
-    int count() {return messageRepository.count(); }
+    void insertMessage(Message message)
+    {
+        messageRepository.insertMessage(message);
+    }
+
+    void deleteMessage(Message message)
+    {
+        messageRepository.deleteMessage(message);
+    }
+
+    int countMessages() {return messageRepository.count(); }
 }

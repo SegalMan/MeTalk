@@ -3,4 +3,11 @@
     <string name="send_button_text">Send!</string>
     <string name="edittext_hint">Type your message here...</string>
     <string name="default_message">Dummy Message</string>
+    <string name="proceed_button_text">This is my name</string>
+    <string name="skip_button_text">Skip</string>
+    <string name="message_details_top_bar_text">Message details</string>
+    <string name="default_username_message">My messages</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

@@ -83,11 +83,11 @@ public class MessageRecyclerUtils {
                       today.get(Calendar.DATE), 0, 0 ,0);
             if (message.messageTime.after(today.getTime()))
             {
-                pattern = "HH:mm";
+                pattern = MainActivity.MESSAGE_FROM_TODAY_FORMAT;
             }
             else
             {
-                pattern = "dd/MM/yyyy HH:mm";
+                pattern = MainActivity.MESSAGE_FROM_BEFORE_FORMAT;
             }
             SimpleDateFormat dateFormatter = new SimpleDateFormat(pattern,
                     Locale.getDefault());

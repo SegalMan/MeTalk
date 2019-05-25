@@ -20,11 +20,11 @@ public class MeTalk extends Application {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                int count = messageViewModel.count();
+                int count = messageViewModel.countMessages();
                 if (count > 0)
                 {
                     Log.i(LOG_TAG, "Local DB contains " +
-                            messageViewModel.count() + " messages");
+                            messageViewModel.countMessages() + " messages");
                 }
                 else
                 {

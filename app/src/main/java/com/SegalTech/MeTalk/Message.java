@@ -1,5 +1,7 @@
 package com.SegalTech.MeTalk;
 
+import android.os.Parcelable;
+
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
@@ -7,16 +9,18 @@ import androidx.room.PrimaryKey;
 
 import com.google.firebase.Timestamp;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
 
 @Entity(tableName = "messages")
-class Message {
+class Message implements Serializable {
 
     final static String FIREBASE_MESSAGE_TEXT_FIELD_NAME = "messageText";
     final static String FIREBASE_MESSAGE_TIME_FIELD_NAME = "messageTime";
+    final static String FIREBASE_ORIGIN_FIELD_NAME = "messageOrigin";
 
     @PrimaryKey
     long messageId;
@@ -27,6 +31,9 @@ class Message {
     @ColumnInfo(name = "timestamp")
     Date messageTime;
 
+    @ColumnInfo(name = "origin")
+    String messageOrigin;
+
     public Message(String messageText)
     {
         this.messageText = messageText;
@@ -34,10 +41,19 @@ class Message {
         this.messageId = messageTime.getTime();
     }
 
+    public Message(String messageText, String origin)
+    {
+        this.messageText = messageText;
+        this.messageTime = Calendar.getInstance().getTime();
+        this.messageId = messageTime.getTime();
+        this.messageOrigin = origin;
+    }
+
     @Ignore
     public Message(String firebaseId, Map<String, Object> values)
     {
         this.messageText = (String)values.get(FIREBASE_MESSAGE_TEXT_FIELD_NAME);
+        this.messageOrigin = (String)values.get(FIREBASE_ORIGIN_FIELD_NAME);
         this.messageTime = ((Timestamp)values.get(FIREBASE_MESSAGE_TIME_FIELD_NAME)).toDate();
         this.messageId = Long.parseLong(firebaseId);
     }

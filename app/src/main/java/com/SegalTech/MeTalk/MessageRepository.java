@@ -11,13 +11,24 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class MessageRepository {
     public static final String FIRESTORE_MESSAGES_COLLECTION_NAME = "Messages";
+    public static final String FIRESTORE_USERNAME_COLLECTION_NAME = "defaults";
+    public static final String FIRESTORE_USERNAME_DOCUMENT_NAME = "username";
+    public static final String FIRESTORE_USERNAME_FIELD_NAME = "username";
     public static final String FIRESTORE_LOG_TAG = "Firestore";
-    public static final String APPLICATION_LOG_TAG = "Application";
+    public static final String USERNAME_INSERTED_SUCCESSFULLY_LOG = "Username inserted successfully";
+    public static final String FAILED_TO_INSERT_USERNAME_LOG = "Failed to insert username";
+    public static final String MESSAGE_INSERTED_SUCCESSFULLY_LOG = "Message inserted successfully";
+    public static final String FAILED_TO_INSERT_MESSAGE_LOG = "Failed to insert message";
+    public static final String MESSAGE_DELETED_SUCCESSFULLY_LOG = "Message deleted successfully";
+    public static final String FAILED_TO_DELETE_MESSAGE_LOG = "Failed to delete message";
+
     private MessageDao messageDao;
 //    private LiveData<List<Message>> allMessages;
     private FirebaseFirestore firestoreDB;
@@ -32,8 +43,14 @@ public class MessageRepository {
 
     CollectionReference getAllMessages()
     {
-        return firestoreDB.collection("Messages");
+        return firestoreDB.collection(FIRESTORE_MESSAGES_COLLECTION_NAME);
 //        return allMessages;
+    }
+
+    DocumentReference getUsername()
+    {
+        return firestoreDB.collection(FIRESTORE_USERNAME_COLLECTION_NAME).document(
+                FIRESTORE_USERNAME_DOCUMENT_NAME);
     }
 
     int count()
@@ -41,17 +58,54 @@ public class MessageRepository {
         return messageDao.count();
     }
 
-    void insert(Message message)
+    void insertUsername(String username)
     {
-        new InsertAsyncTask(messageDao, firestoreDB).execute(message);
+        new InsertUsernameAsyncTask(firestoreDB).execute(username);
     }
 
-    private static class InsertAsyncTask extends AsyncTask<Message, Void, Void>
+    private static class InsertUsernameAsyncTask extends AsyncTask<String, Void, Void>
+    {
+        private FirebaseFirestore asyncTaskFirestoreDB;
+
+        InsertUsernameAsyncTask(FirebaseFirestore firestoreDB)
+        {
+            asyncTaskFirestoreDB = firestoreDB;
+        }
+
+        @Override
+        protected Void doInBackground(String... username) {
+            Map<String, Object> usernameDoc = new HashMap<>();
+            usernameDoc.put(FIRESTORE_USERNAME_FIELD_NAME, username[0]);
+            DocumentReference firestoreUsername = asyncTaskFirestoreDB.collection(
+                    FIRESTORE_USERNAME_COLLECTION_NAME).document(FIRESTORE_USERNAME_DOCUMENT_NAME);
+            firestoreUsername.set(usernameDoc)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.i(FIRESTORE_LOG_TAG, USERNAME_INSERTED_SUCCESSFULLY_LOG);
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.i(FIRESTORE_LOG_TAG, FAILED_TO_INSERT_USERNAME_LOG);
+                        }
+                    });
+            return null;
+        }
+    }
+
+    void insertMessage(Message message)
+    {
+        new InsertMessageAsyncTask(messageDao, firestoreDB).execute(message);
+    }
+
+    private static class InsertMessageAsyncTask extends AsyncTask<Message, Void, Void>
     {
         private FirebaseFirestore asyncTaskFirestoreDB;
         private MessageDao asyncTaskMessageDao;
 
-        InsertAsyncTask(MessageDao dao, FirebaseFirestore DB)
+        InsertMessageAsyncTask(MessageDao dao, FirebaseFirestore DB)
         {
             asyncTaskMessageDao = dao;
             asyncTaskFirestoreDB = DB;
@@ -67,30 +121,30 @@ public class MessageRepository {
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            Log.i(FIRESTORE_LOG_TAG, "Message inserted successfully");
+                            Log.i(FIRESTORE_LOG_TAG, MESSAGE_INSERTED_SUCCESSFULLY_LOG);
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            Log.i(FIRESTORE_LOG_TAG, "Failed to insert message");
+                            Log.i(FIRESTORE_LOG_TAG, FAILED_TO_INSERT_MESSAGE_LOG);
                         }
                     });
             return null;
         }
     }
 
-    void delete(Message message)
+    void deleteMessage(Message message)
     {
-        new DeleteAsyncTask(messageDao, firestoreDB).execute(message);
+        new DeleteMessageAsyncTask(messageDao, firestoreDB).execute(message);
     }
 
-    private static class DeleteAsyncTask extends AsyncTask<Message, Void, Void>
+    private static class DeleteMessageAsyncTask extends AsyncTask<Message, Void, Void>
     {
 
         private FirebaseFirestore asyncTaskFirestoreDB;
         private MessageDao asyncTaskMessageDao;
-        DeleteAsyncTask(MessageDao dao, FirebaseFirestore DB)
+        DeleteMessageAsyncTask(MessageDao dao, FirebaseFirestore DB)
         {
             asyncTaskMessageDao = dao;
             asyncTaskFirestoreDB = DB;
@@ -100,19 +154,19 @@ public class MessageRepository {
         protected Void doInBackground(Message... messages) {
             asyncTaskMessageDao.delete(messages[0]);
             DocumentReference messageToDelete = asyncTaskFirestoreDB.collection(
-                    "Messages").document(
+                    FIRESTORE_MESSAGES_COLLECTION_NAME).document(
                             String.valueOf(messages[0].messageTime.getTime()));
             messageToDelete.delete()
             .addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
-                    Log.i(FIRESTORE_LOG_TAG, "Message deleted successfully");
+                    Log.i(FIRESTORE_LOG_TAG, MESSAGE_DELETED_SUCCESSFULLY_LOG);
                 }
             })
             .addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                    Log.i(FIRESTORE_LOG_TAG, "Failed to delete message");
+                    Log.i(FIRESTORE_LOG_TAG, FAILED_TO_DELETE_MESSAGE_LOG);
                 }
             });
             return null;
@@ -120,16 +174,16 @@ public class MessageRepository {
 
     }
 
-    void insertAll(List<Message> messages)
+    void insertAllMessages(List<Message> messages)
     {
-        new InsertAllAsyncTask(messageDao).execute(messages);
+        new InsertAllMessagesAsyncTask(messageDao).execute(messages);
     }
 
-    private static class InsertAllAsyncTask extends AsyncTask<List<Message>, Void, Void>
+    private static class InsertAllMessagesAsyncTask extends AsyncTask<List<Message>, Void, Void>
     {
 
         private MessageDao asyncTaskMessageDao;
-        InsertAllAsyncTask(MessageDao dao)
+        InsertAllMessagesAsyncTask(MessageDao dao)
         {
             asyncTaskMessageDao = dao;
         }
