@@ -3,6 +3,7 @@ package com.SegalTech.MeTalk;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -39,28 +40,6 @@ public class MainActivity extends AppCompatActivity {
             SharedPreferences.Editor editor = sp.edit();
             editor.putString(ORIGIN_KEY, UUID.randomUUID().toString());
             editor.apply();
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        int count = getSupportFragmentManager().getBackStackEntryCount();
-
-        if (count == 0)
-        {
-            super.onBackPressed();
-            new AlertDialog.Builder(this).setIcon(android.R.drawable.ic_dialog_alert).setTitle("Exit")
-                    .setMessage("Are you sure you want to exit?")
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            finish();
-                        }
-                    }).setNegativeButton("No", null).show();
-        }
-        else
-        {
-            getSupportFragmentManager().popBackStack();
         }
     }
 

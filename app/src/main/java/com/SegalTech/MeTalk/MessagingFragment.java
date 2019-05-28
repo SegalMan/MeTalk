@@ -80,6 +80,42 @@ public class MessagingFragment extends Fragment
             usernameTextView.setText(usernameText);
         }
 
+
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+
+                MainActivity mainActivity = (MainActivity)getActivity();
+
+                if (mainActivity == null)
+                {
+                    return;
+                }
+                int count = getActivity().getSupportFragmentManager().getBackStackEntryCount();
+
+                if (count == 0)
+                {
+                    if (getContext() == null)
+                    {
+                        return;
+                    }
+                    new AlertDialog.Builder(getContext()).setIcon(android.R.drawable.ic_dialog_alert).setTitle("Exit")
+                            .setMessage("Are you sure you want to exit?")
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    getActivity().finish();
+                                }
+                            }).setNegativeButton("No", null).show();
+                }
+                else
+                {
+                    getActivity().getSupportFragmentManager().popBackStack();
+                }
+            }
+        };
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
+
         // Configure RecyclerView
         final RecyclerView messageRecycler = view.findViewById(R.id.message_recycler);
         messageRecycler.setLayoutManager(new LinearLayoutManager(
