@@ -13,6 +13,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -39,6 +40,28 @@ public class MessageViewModel extends AndroidViewModel {
         messageRepository = new MessageRepository(app);
         allMessages = new MutableLiveData<>();
         username = new MutableLiveData<>();
+        messageRepository.getAllMessages().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull final Task<QuerySnapshot> task) {
+                executor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        ArrayList<Message> messages = new ArrayList<>();
+                        if (task.isSuccessful())
+                        {
+                            if (task.getResult() != null)
+                            {
+                                for (QueryDocumentSnapshot document : task.getResult())
+                                {
+                                    messages.add(new Message(document.getId(), document.getData()));
+                                }
+                                insertAllMessages(messages);
+                            }
+                        }
+                    }
+                });
+            }
+        });
         messageRepository.getAllMessages().addSnapshotListener(
                 new EventListener<QuerySnapshot>()
             {

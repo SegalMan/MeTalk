@@ -19,7 +19,9 @@
         android:label="MessageDetailsFragment" >
         <action
             android:id="@+id/action_messageDetailsFragment_to_messagingFragment"
-            app:destination="@id/messagingFragment" />
+            app:destination="@id/messagingFragment"
+            app:popUpTo="@+id/messageDetailsFragment"
+            app:popUpToInclusive="true" />
         <argument
             android:name="message"
             app:argType="com.SegalTech.MeTalk.Message" />
@@ -41,10 +43,13 @@
         tools:layout="@layout/fragment_splash_screen" >
         <action
             android:id="@+id/action_splashScreenFragment_to_messagingFragment"
-            app:destination="@id/messagingFragment" />
+            app:destination="@id/messagingFragment"
+            app:popUpTo="@+id/splashScreenFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_splashScreenFragment_to_configureNameFragment"
             app:destination="@id/configureNameFragment"
+            app:popUpTo="@+id/messagingFragment"
             app:popUpToInclusive="true" />
     </fragment>
 </navigation>

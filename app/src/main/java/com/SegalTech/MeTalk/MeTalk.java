@@ -2,6 +2,9 @@ package com.SegalTech.MeTalk;
 import android.app.Application;
 import android.util.Log;
 
+import androidx.lifecycle.Observer;
+
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 

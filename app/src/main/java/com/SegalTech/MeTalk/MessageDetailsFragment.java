@@ -39,6 +39,7 @@ public class MessageDetailsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 
+        super.onViewCreated(view, savedInstanceState);
         final Message message = (Message)getArguments().getSerializable(
                 MainActivity.MESSAGE_NAV_ARG_KEY);
 
@@ -74,11 +75,22 @@ public class MessageDetailsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 MainActivity mainActivity = (MainActivity)getActivity();
+                if (mainActivity == null)
+                {
+                    return;
+                }
                 MeTalk application = (MeTalk) getActivity().getApplication();
+                if (application.messageViewModel.getAllMessages().getValue() == null)
+                {
+                    return;
+                }
                 int messageIndex = application.messageViewModel.getAllMessages().getValue().
                         indexOf(message);
                 application.messageViewModel.deleteMessage(message);
-                mainActivity.adapter.notifyItemRemoved(messageIndex);
+
+                MessageRecyclerUtils.MessageAdapter adapter = mainActivity.getAdapter();
+
+                adapter.notifyItemRemoved(messageIndex);
                 Navigation.findNavController(v).navigate(
                         R.id.action_messageDetailsFragment_to_messagingFragment);
             }

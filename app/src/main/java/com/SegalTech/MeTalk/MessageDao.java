@@ -8,12 +8,14 @@ import androidx.room.Query;
 
 import java.util.List;
 
+import static androidx.room.OnConflictStrategy.REPLACE;
+
 @Dao
 public interface MessageDao {
     @Query("SELECT * FROM messages ORDER BY timestamp")
     LiveData<List<Message>> getAll();
 
-    @Insert
+    @Insert(onConflict = REPLACE)
     void insert(Message message);
 
     @Delete

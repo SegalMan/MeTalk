@@ -32,7 +32,7 @@ public class ConfigureNameFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-//        super.onViewCreated(view, savedInstanceState);
+        super.onViewCreated(view, savedInstanceState);
         Button skipButton = view.findViewById(R.id.skip_button);
         final EditText usernameBox = view.findViewById(R.id.username_box);
         Button proceedButton = view.findViewById(R.id.proceed_button);

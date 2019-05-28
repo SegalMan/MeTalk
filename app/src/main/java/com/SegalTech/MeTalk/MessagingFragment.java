@@ -1,11 +1,15 @@
 package com.SegalTech.MeTalk;
 
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,6 +23,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.List;
 
 import jp.wasabeef.recyclerview.animators.SlideInRightAnimator;
 
@@ -35,7 +41,7 @@ public class MessagingFragment extends Fragment
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_messaging, container, false);
@@ -44,15 +50,33 @@ public class MessagingFragment extends Fragment
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 
+        super.onViewCreated(view, savedInstanceState);
+
         final MainActivity mainActivity = (MainActivity)getActivity();
+        if (mainActivity == null)
+        {
+            return;
+        }
         final MeTalk application = (MeTalk) mainActivity.getApplication();
 
-        mainActivity.username = application.messageViewModel.getUsername().getValue();
+        final MessageRecyclerUtils.MessageAdapter messageRecyclerAdapter = mainActivity.getAdapter();
 
-        if (mainActivity.username != null)
+        application.messageViewModel.getAllMessages().observe(this,
+                new Observer<List<Message>>() {
+                    @Override
+                    public void onChanged(List<Message> messages) {
+                        messageRecyclerAdapter.submitList(messages);
+                    }
+                });
+
+        mainActivity.setUsername(application.messageViewModel.getUsername().getValue());
+
+        String username = mainActivity.getUsername();
+
+        if (!username.equals(""))
         {
             TextView usernameTextView = view.findViewById(R.id.username);
-            String usernameText = mainActivity.username + "'s messages";
+            String usernameText = username + "'s messages";
             usernameTextView.setText(usernameText);
         }
 
@@ -60,8 +84,8 @@ public class MessagingFragment extends Fragment
         final RecyclerView messageRecycler = view.findViewById(R.id.message_recycler);
         messageRecycler.setLayoutManager(new LinearLayoutManager(
                 getContext(), RecyclerView.VERTICAL, false));
-        messageRecycler.setAdapter(mainActivity.adapter);
-        mainActivity.adapter.callback = this;
+        messageRecycler.setAdapter(messageRecyclerAdapter);
+        messageRecyclerAdapter.callback = this;
         messageRecycler.setItemAnimator(new SlideInRightAnimator());
 
         final ImageButton sendButton = view.findViewById(R.id.send_button);
@@ -75,7 +99,7 @@ public class MessagingFragment extends Fragment
                 // Shows empty message error via Toast
                 if (messageBox.getText().toString().isEmpty())
                 {
-                    Toast t = Toast.makeText(getActivity().getApplicationContext(),
+                    Toast t = Toast.makeText(mainActivity.getApplicationContext(),
                             EMPTY_MSG_TOAST_TEXT,
                             Toast.LENGTH_SHORT);
 
@@ -90,18 +114,12 @@ public class MessagingFragment extends Fragment
                     String origin = sp.getString("Origin", null);
                     application.messageViewModel.insertMessage(new Message(messageBox.getText().
                             toString(), origin));
-                    mainActivity.adapter.notifyItemInserted(messageRecycler.getChildCount());
+                    messageRecyclerAdapter.notifyItemInserted(messageRecycler.getChildCount());
                     messageBox.setText("");
                     messageBox.clearFocus();
                 }
             }
         });
-
-        // Retains RecyclerView and EditText contents on changed configuration
-        if (savedInstanceState != null)
-        {
-            messageBox.setText(savedInstanceState.getCharSequence(MainActivity.MSG_BOX_KEY));
-        }
     }
 
     @Override
@@ -110,7 +128,13 @@ public class MessagingFragment extends Fragment
         Bundle args = new Bundle();
         args.putSerializable(MainActivity.MESSAGE_NAV_ARG_KEY, message);
 
-        Navigation.findNavController(this.getView()).navigate(
-                R.id.action_messagingFragment_to_messageDetailsFragment, args);
+        View view = this.getView();
+
+        if (view != null)
+        {
+            Navigation.findNavController(this.getView()).navigate(
+                    R.id.action_messagingFragment_to_messageDetailsFragment, args);
+        }
+
     }
 }

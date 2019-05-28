@@ -18,7 +18,7 @@ import java.util.Map;
 
 public class MessageRepository {
     public static final String FIRESTORE_MESSAGES_COLLECTION_NAME = "Messages";
-    public static final String FIRESTORE_USERNAME_COLLECTION_NAME = "defaults";
+    public static final String FIRESTORE_USERNAME_COLLECTION_NAME = "Defaults";
     public static final String FIRESTORE_USERNAME_DOCUMENT_NAME = "username";
     public static final String FIRESTORE_USERNAME_FIELD_NAME = "username";
     public static final String FIRESTORE_LOG_TAG = "Firestore";
@@ -29,14 +29,12 @@ public class MessageRepository {
     public static final String MESSAGE_DELETED_SUCCESSFULLY_LOG = "Message deleted successfully";
     public static final String FAILED_TO_DELETE_MESSAGE_LOG = "Failed to delete message";
 
-    private MessageDao messageDao;
-//    private LiveData<List<Message>> allMessages;
+    private MessageDatabase dbAccess;
     private FirebaseFirestore firestoreDB;
 
     MessageRepository(Application app)
     {
-        MessageDatabase dbAccess = MessageDatabase.getDatabase(app);
-        messageDao = dbAccess.messageDao();
+        dbAccess = MessageDatabase.getDatabase(app);
 //        allMessages = messageDao.getAll();
         firestoreDB = FirebaseFirestore.getInstance();
     }
@@ -55,7 +53,7 @@ public class MessageRepository {
 
     int count()
     {
-        return messageDao.count();
+        return dbAccess.messageDao().count();
     }
 
     void insertUsername(String username)
@@ -97,7 +95,7 @@ public class MessageRepository {
 
     void insertMessage(Message message)
     {
-        new InsertMessageAsyncTask(messageDao, firestoreDB).execute(message);
+        new InsertMessageAsyncTask(dbAccess.messageDao(), firestoreDB).execute(message);
     }
 
     private static class InsertMessageAsyncTask extends AsyncTask<Message, Void, Void>
@@ -136,7 +134,7 @@ public class MessageRepository {
 
     void deleteMessage(Message message)
     {
-        new DeleteMessageAsyncTask(messageDao, firestoreDB).execute(message);
+        new DeleteMessageAsyncTask(dbAccess.messageDao(), firestoreDB).execute(message);
     }
 
     private static class DeleteMessageAsyncTask extends AsyncTask<Message, Void, Void>
@@ -176,7 +174,7 @@ public class MessageRepository {
 
     void insertAllMessages(List<Message> messages)
     {
-        new InsertAllMessagesAsyncTask(messageDao).execute(messages);
+        new InsertAllMessagesAsyncTask(dbAccess.messageDao()).execute(messages);
     }
 
     private static class InsertAllMessagesAsyncTask extends AsyncTask<List<Message>, Void, Void>
