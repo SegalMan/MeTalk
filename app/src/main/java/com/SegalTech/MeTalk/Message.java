@@ -68,7 +68,7 @@ class Message implements Serializable {
 
         Message m = (Message) obj;
 
-        return ((this.messageId == m.messageId) && (Objects.equals(this.messageTime, m.messageTime))
+        return ((Objects.equals(this.messageTime, m.messageTime))
                 && (Objects.equals(this.messageText, m.messageText)));
     }
 

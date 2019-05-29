@@ -35,12 +35,12 @@ public class MessageRecyclerUtils {
 
         @Override
         public boolean areItemsTheSame(@NonNull Message m1, @NonNull Message m2) {
-            return m1 == m2;
+            return m1.equals(m2);
         }
 
         @Override
         public boolean areContentsTheSame(@NonNull Message m1, @NonNull Message m2) {
-            return m1.equals(m2);
+            return true;
         }
     }
 
